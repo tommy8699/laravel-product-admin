@@ -25,13 +25,18 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $mailTo = config('mail.admin_address');
         $data = $request->validate(['name' => ['required', 'string', 'max:255'], 'description' => ['nullable', 'string'], 'categories' => ['required', 'array', 'min:1'], 'categories.*' => ['integer', 'exists:categories,id']]);
+
         do {
             $hash = Str::random(16);
         } while (Product::where('hash', $hash)->exists());
+
         $product = Product::create(['name' => $data['name'], 'description' => $data['description'] ?? null, 'hash' => $hash]);
         $product->categories()->sync($data['categories']);
-        Mail::to('admin@test.com')->later(now()->addMinutes(15), new ProductCreatedMail($product->load('categories')));
+
+        Mail::to($mailTo)->later(now()->addMinutes(15), new ProductCreatedMail($product->load('categories')));
+
         return redirect()->route('products.index')->with('success', __('messages.created'));
     }
 
@@ -44,14 +49,17 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $data = $request->validate(['name' => ['required', 'string', 'max:255'], 'description' => ['nullable', 'string'], 'categories' => ['required', 'array', 'min:1'], 'categories.*' => ['integer', 'exists:categories,id']]);
+
         $product->update(['name' => $data['name'], 'description' => $data['description'] ?? null]);
         $product->categories()->sync($data['categories']);
+
         return redirect()->route('products.index')->with('success', __('messages.updated'));
     }
 
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
+
         return redirect()->route('products.index')->with('success', __('messages.deleted'));
     }
 }
