@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'app' => 'Aministrácia produktov',
+    'app' => 'Administrácia produktov',
     'login' => 'Prihlásenie',
     'email' => 'E-mail',
     'password' => 'Heslo',
