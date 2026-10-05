@@ -11,7 +11,27 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (['Electronics', 'Books', 'Home', 'Sport', 'Fashion'] as $name) Category::firstOrCreate(['name' => $name]);
-        User::updateOrCreate(['email' => 'admin@test.com'], ['name' => 'Administrator', 'password' => Hash::make('password')]);
+        $categories = [
+            'Tričká',
+            'Mikiny',
+            'Nohavice',
+            'Bundy',
+            'Šaty',
+            'Obuv',
+        ];
+
+        foreach ($categories as $category) {
+            Category::firstOrCreate([
+                'name' => $category,
+            ]);
+        }
+
+        User::updateOrCreate(
+            ['email' => 'admin@test.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password'),
+            ]
+        );
     }
 }
